@@ -1,0 +1,72 @@
+apiVersion: automation.cloudbees.io/v1alpha1
+kind: action
+name: stackhawk
+inputs:
+  token:
+    required: true
+  environment:
+    required: true
+  url:
+    required: true
+  paths:
+    required: true
+  test-path:
+    required: true
+  app-id:
+    required: true
+  auth-type:
+    required: true
+  app-username-form-field-name:
+    description: "Form field name of username field"
+  app-password-form-field-name:
+    description: "Form field name of password field"
+  app-username:
+    description: "Application username"
+  app-password:
+    description: "Application password"
+  domain:
+    description: "Domain url"
+  client-id:
+    description: "Application client id"
+  client-secret:
+    description: "Application client secret"
+runs:
+  using: composite
+  steps:
+    - id: stackhawk
+      name: stackhawk
+      uses: docker://registry.saas-dev.beescloud.com/staging/compliance-stackhawk:37
+      shell: bash
+      env:
+        RUN_ID: ${{ cloudbees.run_id }}
+        JOB_ID: ${{ job.id }}
+        STEP_ID: ${{ step.internal.id }}
+        DNS_URL: ${{ cloudbees.api.url }}
+        JWT_TOKEN: ${{ cloudbees.api.token }} 
+        NO_AUTH_CONFIG_JSON: '{\"metaInfo\":{\"url\":\"NA\",\"username\":\"NA\",\"password\":\"NA\",\"client_secret\":\"${{ inputs.token }}\",\"toolName\":\"stackhawk\",\"attributes\":{\"sub_attributes\":{\"stackhawk_context\":{\"environment\":\"${{ inputs.environment }}\",\"context\":{\"authType\":\"NoAuth\",\"paths\":\"${{ inputs.paths }}\",\"testPath\":\"${{ inputs.test-path }}\",\"appId\":\"${{ inputs.app-id }}\"},\"url\":\"${{ inputs.url }}\"}}}},\"orchestratorInfo\":{\"assetType\":\"CORE\",\"assetIdentifier\":\"NA\",\"profileIdentifier\":\"NA\"},\"metaInformation\":{\"actor\":\"NA\",\"commit_id\":\"NA\",\"tenent_info\":\"NA\",\"scanner_type\":\"DAST\",\"pipeline_info\":{\"id\":\"04612\",\"name\":\"test_pipeline\",\"step_id\":\"04612_test_pipeline\"}}}'
+        USERNAME_PASSWORD_AUTH_CONFIG_JSON: '{\"metaInfo\":{\"url\":\"NA\",\"username\":\"NA\",\"password\":\"NA\",\"client_secret\":\"${{ inputs.token }}\",\"toolName\":\"stackhawk\",\"attributes\":{\"sub_attributes\":{\"stackhawk_context\":{\"environment\":\"${{ inputs.environment }}\",\"context\":{\"authType\":\"UsernamePasswordAuth\",\"paths\":\"${{ inputs.paths }}\",\"testPath\":\"${{ inputs.test-path }}\",\"appId\":\"${{ inputs.app-id }}\",\"credentials\":{\"userNameFormFieldName\":\"${{ inputs.app-username-form-field-name }}\",\"passwordFormFieldName\":\"${{ inputs.app-password-form-field-name }}\",\"username\":\"${{ inputs.app-username }}\",\"password\":\"${{ inputs.app-password }}\"}},\"url\":\"${{ inputs.url }}\"}}}},\"orchestratorInfo\":{\"assetType\":\"CORE\",\"assetIdentifier\":\"NA\",\"profileIdentifier\":\"NA\"},\"metaInformation\":{\"actor\":\"NA\",\"commit_id\":\"NA\",\"tenent_info\":\"NA\",\"scanner_type\":\"DAST\",\"pipeline_info\":{\"id\":\"04612\",\"name\":\"test_pipeline\",\"step_id\":\"04612_test_pipeline\"}}}'
+        AUTH0_CONFIG_JSON: '{\"metaInfo\":{\"url\":\"NA\",\"username\":\"NA\",\"password\":\"NA\",\"client_secret\":\"${{ inputs.token }}\",\"toolName\":\"stackhawk\",\"attributes\":{\"sub_attributes\":{\"stackhawk_context\":{\"environment\":\"${{ inputs.environment }}\",\"context\":{\"authType\":\"Auth0\",\"paths\":\"${{ inputs.paths }}\",\"testPath\":\"${{ inputs.test-path }}\",\"appId\":\"${{ inputs.app-id }}\",\"credentials\":{\"clientId\":\"${{ inputs.client-id }}\",\"domain\":\"${{ inputs.domain }}\",\"clientSecret\":\"${{ inputs.client-secret }}\"}},\"url\":\"${{ inputs.url }}\"}}}},\"orchestratorInfo\":{\"assetType\":\"CORE\",\"assetIdentifier\":\"NA\",\"profileIdentifier\":\"NA\"},\"metaInformation\":{\"actor\":\"NA\",\"commit_id\":\"NA\",\"tenent_info\":\"NA\",\"scanner_type\":\"DAST\",\"pipeline_info\":{\"id\":\"04612\",\"name\":\"test_pipeline\",\"step_id\":\"04612_test_pipeline\"}}}'
+        CONFIG_JSON: ""
+      run: |
+        set -x
+        cd /app
+        if [ ${{ inputs.auth-type }} = "noauth" ]
+        then
+          CONFIG_JSON=$NO_AUTH_CONFIG_JSON
+        elif [ ${{ inputs.auth-type }} = "UsernamePasswordAuth" ]
+        then
+          CONFIG_JSON=$USERNAME_PASSWORD_AUTH_CONFIG_JSON
+        else
+          CONFIG_JSON=$AUTH0_CONFIG_JSON
+        fi
+        echo "RUN ID: ${{ cloudbees.run_id }}"
+        echo "Job ID: ${{ job.id }}"
+        echo "Step ID: ${{step.internal.id}}"
+        echo "DNS URL: ${{ cloudbees.api.url }}"
+        echo "JWT TOKEN: ${{ cloudbees.api.token }}"
+        echo "CONFIG JSON: $CONFIG_JSON"
+        /bin/bash -c "java $JAVA_OPTS -javaagent:/app/opentelemetry-javaagent.jar -jar /app/stackhawk.jar & while ! nc -z localhost 5001; do sleep 1; done && /app/orchestrator -scanConfig \"${CONFIG_JSON}\" execute-analyser && exit"
+
+
+       
+        

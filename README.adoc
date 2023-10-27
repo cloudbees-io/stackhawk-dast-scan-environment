@@ -1,0 +1,92 @@
+= CloudBees action: Scan with StackHawk
+
+Use this action to scan a web application with the StackHawk dynamic application security testing (DAST) scanner.
+
+== Inputs
+
+[cols="2a,1a,3a,3a",options="header"]
+.Input details
+|===
+
+| Input name
+| Data type
+| Required?
+| Description
+
+| `token`
+| String
+| Required only if `username` and `password` are not specified.
+| The StackHawk token.
+
+| `app-id`
+| String
+| Yes
+| The StackHawk application ID.
+
+| `environment`
+| String
+| Yes
+| The application environment name.
+
+| `auth-type`
+| String
+| No
+| The authorization type. The "no authorization" option (`+"noauth"+`) is only supported at present.
+
+| `paths`
+| String
+| Yes
+| The application paths to scan.
+
+| `test-path`
+| String
+| Yes
+| The file path to comparison test, which contains known security vulnerabilities.
+
+| `url`
+| String
+| Yes
+| The application URL.
+
+| `client-id`
+| String
+| Required only if `token` is not specified.
+| The StackHawk client ID.
+
+| `client-secret`
+| String
+| Required only if `token` is not specified.
+| The StackHawk client secret.
+|===
+
+== Usage example
+
+In your YAML file, add:
+
+[source,yaml]
+----
+
+      - name: Scan with StackHawk DAST
+        uses: cloudbees-io/stackhawk-dast-scan-environment@v1.0.1
+        with:
+          token: ${{ secrets.STACKHAWK_CLIENT_SECRET }}
+          app-id: "your-application-ID"
+          environment: "Development"
+          auth-type: ''
+          paths: "/example1-path,/example2-path"
+          test-path: "/example3-path"
+          url: "https://dev.example.com"
+          client-id: ${{ secrets.STACKHAWK_CLIENT_ID }}
+          client-secret: ${{ secrets.STACKHAWK_CLIENT_SECRET }}
+----
+
+== License
+
+This code is made available under the 
+link:https://opensource.org/license/mit/[MIT license].
+
+== References
+
+* Learn more about link:https://docs.cloudbees.com/docs/cloudbees-saas-platform-actions/latest/[using actions in CloudBees workflows].
+* Learn about link:https://docs.cloudbees.com/docs/cloudbees-saas-platform/latest/[the CloudBees platform].
+
