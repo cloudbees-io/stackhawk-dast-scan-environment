@@ -15,7 +15,7 @@ Use this action to scan a web application with the StackHawk dynamic application
 
 | `token`
 | String
-| Required only if `username` and `password` are not specified.
+| Yes
 | The StackHawk token.
 
 | `app-id`
@@ -30,8 +30,13 @@ Use this action to scan a web application with the StackHawk dynamic application
 
 | `auth-type`
 | String
-| No
-| The authorization type. The "no authorization" option (`+"noauth"+`) is only supported at present.
+| Yes
+| The authorization type.
+Supported types are:
+
+* None (`+"noauth"+`)
+* Username/password (`+"UsernamePasswordAuth"+`)
+* Auth0 (`+"auth0"+`)
 
 | `paths`
 | String
@@ -48,36 +53,111 @@ Use this action to scan a web application with the StackHawk dynamic application
 | Yes
 | The application URL.
 
+| `app-username-form-field-name`
+| String
+| Required only if `+auth-type: "UsernamePasswordAuth"+`.
+| The form field name of the application username.
+
+| `app-password-form-field-name`
+| String
+| Required only if `+auth-type: "UsernamePasswordAuth"+`.
+| The form field name of the application password.
+
+| `app-username`
+| String
+| Required only if `+auth-type: "UsernamePasswordAuth"+`.
+| The application username.
+
+| `app-password`
+| String
+| Required only if `+auth-type: "UsernamePasswordAuth"+`.
+| The application password.
+
+| `domain`
+| String
+| Required only if `+auth-type: "auth0"+`.
+| The StackHawk domain.
+
 | `client-id`
 | String
-| Required only if `token` is not specified.
+| Required only if `+auth-type: "auth0"+`.
 | The StackHawk client ID.
 
 | `client-secret`
 | String
-| Required only if `token` is not specified.
+| Required only if `+auth-type: "auth0"+`.
 | The StackHawk client secret.
 |===
 
-== Usage example
+== Usage examples
 
-In your YAML file, add:
+The following display an example of each authorization type in use.
+
+=== No authorization
+
+In the case of `+auth-type: "noauth"+`:
 
 [source,yaml]
 ----
 
-      - name: Scan with StackHawk DAST
-        uses: cloudbees-io/stackhawk-dast-scan-environment@v1.0.1
+      - name: Scan with StackHawk noauth
+        uses: cloudbees-io/stackhawk-dast-scan-environment@v1
         with:
-          token: ${{ secrets.STACKHAWK_CLIENT_SECRET }}
-          app-id: "your-application-ID"
+          token: ${{ secrets.STACKHAWK_TOKEN }}
+          app-id: "your-application-id"
           environment: "Development"
-          auth-type: ''
-          paths: "/example1-path,/example2-path"
-          test-path: "/example3-path"
-          url: "https://dev.example.com"
+          auth-type: "noauth"
+          paths: "/components1,/components2"
+          test-path: "/component-test"
+          url: "https://example.com"
+
+----
+
+=== Username/password authorization
+
+In the case of `+auth-type: "UsernamePasswordAuth"+`:
+
+[source,yaml]
+----
+
+      - name: Scan with StackHawk user passwd
+        uses: cloudbees-io/stackhawk-dast-scan-environment@v1
+        with:
+          token: ${{ secrets.STACKHAWK_TOKEN}}
+          app-id: "your-application-id"
+          environment: "Development"
+          auth-type: "UsernamePasswordAuth"
+          paths: "/index.jsp?content=personal.htm"
+          test-path: "/index.jsp?content=personal.htm"
+          url: "https://demo.testfire.net"
+          app-username-form-field-name: "uid"
+          app-password-form-field-name: "passw"
+          app-username: "admin"
+          app-password: ${{ secrets.STACKHAWK_PASSWORD }}
+
+----
+
+=== Auth0 authorization
+
+In the case of `+auth-type: "auth0"+`:
+
+[source,yaml]
+----
+
+      - name: Scan with StackHawk auth0
+        uses: cloudbees-io/stackhawk-dast-scan-environment@v1
+        with:
+          token: ${{ secrets.STACKHAWK_TOKEN }}
+          app-id: "your-application-id"
+          environment: "Development"
+          auth-type: "auth0"
+          paths: "/dashboard,/organisations,/standards"
+          test-path: "/components"
+          url: "https://example.com"
+          domain: "https://cbcdev.eu.auth0.com"
           client-id: ${{ secrets.STACKHAWK_CLIENT_ID }}
           client-secret: ${{ secrets.STACKHAWK_CLIENT_SECRET }}
+
 ----
 
 == License
