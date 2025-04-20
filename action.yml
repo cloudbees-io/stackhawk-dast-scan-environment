@@ -35,7 +35,8 @@ runs:
   steps:
     - id: stackhawk
       name: stackhawk
-      uses: docker://public.ecr.aws/l7o7z1g8/actions/stackhawk-dast-actions:main-a19ce057f432ef4a59bb5e8dc6fc84a0880b75f9
+      # uses: docker://public.ecr.aws/l7o7z1g8/actions/stackhawk-dast-actions:main-a19ce057f432ef4a59bb5e8dc6fc84a0880b75f9
+      uses: docker://020229604682.dkr.ecr.us-east-1.amazonaws.com/actions/stackhawk-dast-actions:CBP-12062-d29422e9997ffeb767a61d02e076cdbb913752ed
       shell: bash
       env:
         RUN_ID: ${{ cloudbees.run_id }}
