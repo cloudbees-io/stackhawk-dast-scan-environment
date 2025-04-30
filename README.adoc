@@ -43,7 +43,7 @@ The following display an example of the action in use.
 ----
 
       - name: Scan with StackHawk noauth
-        uses: cloudbees-io/stackhawk-dast-scan-environment@v1
+        uses: cloudbees-io/stackhawk-dast-scan-environment@v2
         with:
           token: ${{ secrets.STACKHAWK_TOKEN }}
           app-id: "your-application-id"
