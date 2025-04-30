@@ -8,28 +8,9 @@ inputs:
     required: true
   url:
     required: true
-  paths:
-    required: true
-  test-path:
-    required: true
   app-id:
     required: true
-  auth-type:
-    required: true
-  app-username-form-field-name:
-    description: "Form field name of username field"
-  app-password-form-field-name:
-    description: "Form field name of password field"
-  app-username:
-    description: "Application username"
-  app-password:
-    description: "Application password"
-  domain:
-    description: "Domain url"
-  client-id:
-    description: "Application client id"
-  client-secret:
-    description: "Application client secret"
+
 runs:
   using: composite
   steps:
@@ -43,22 +24,10 @@ runs:
         STEP_ID: ${{ step.internal.id }}
         DNS_URL: ${{ cloudbees.api.url }}
         JWT_TOKEN: ${{ cloudbees.api.token }} 
-        NO_AUTH_CONFIG_JSON: '{\"metaInfo\":{\"url\":\"NA\",\"username\":\"NA\",\"password\":\"NA\",\"client_secret\":\"${{ inputs.token }}\",\"toolName\":\"stackhawk\",\"attributes\":{\"sub_attributes\":{\"stackhawk_context\":{\"environment\":\"${{ inputs.environment }}\",\"context\":{\"authType\":\"NoAuth\",\"paths\":\"${{ inputs.paths }}\",\"testPath\":\"${{ inputs.test-path }}\",\"appId\":\"${{ inputs.app-id }}\"},\"url\":\"${{ inputs.url }}\"}}}},\"orchestratorInfo\":{\"assetType\":\"CORE\",\"assetIdentifier\":\"NA\",\"profileIdentifier\":\"NA\"},\"metaInformation\":{\"actor\":\"NA\",\"commit_id\":\"NA\",\"tenent_info\":\"NA\",\"scanner_type\":\"DAST\",\"pipeline_info\":{\"id\":\"04612\",\"name\":\"test_pipeline\",\"step_id\":\"04612_test_pipeline\"}}}'
-        USERNAME_PASSWORD_AUTH_CONFIG_JSON: '{\"metaInfo\":{\"url\":\"NA\",\"username\":\"NA\",\"password\":\"NA\",\"client_secret\":\"${{ inputs.token }}\",\"toolName\":\"stackhawk\",\"attributes\":{\"sub_attributes\":{\"stackhawk_context\":{\"environment\":\"${{ inputs.environment }}\",\"context\":{\"authType\":\"UsernamePasswordAuth\",\"paths\":\"${{ inputs.paths }}\",\"testPath\":\"${{ inputs.test-path }}\",\"appId\":\"${{ inputs.app-id }}\",\"credentials\":{\"userNameFormFieldName\":\"${{ inputs.app-username-form-field-name }}\",\"passwordFormFieldName\":\"${{ inputs.app-password-form-field-name }}\",\"username\":\"${{ inputs.app-username }}\",\"password\":\"${{ inputs.app-password }}\"}},\"url\":\"${{ inputs.url }}\"}}}},\"orchestratorInfo\":{\"assetType\":\"CORE\",\"assetIdentifier\":\"NA\",\"profileIdentifier\":\"NA\"},\"metaInformation\":{\"actor\":\"NA\",\"commit_id\":\"NA\",\"tenent_info\":\"NA\",\"scanner_type\":\"DAST\",\"pipeline_info\":{\"id\":\"04612\",\"name\":\"test_pipeline\",\"step_id\":\"04612_test_pipeline\"}}}'
-        AUTH0_CONFIG_JSON: '{\"metaInfo\":{\"url\":\"NA\",\"username\":\"NA\",\"password\":\"NA\",\"client_secret\":\"${{ inputs.token }}\",\"toolName\":\"stackhawk\",\"attributes\":{\"sub_attributes\":{\"stackhawk_context\":{\"environment\":\"${{ inputs.environment }}\",\"context\":{\"authType\":\"Auth0\",\"paths\":\"${{ inputs.paths }}\",\"testPath\":\"${{ inputs.test-path }}\",\"appId\":\"${{ inputs.app-id }}\",\"credentials\":{\"clientId\":\"${{ inputs.client-id }}\",\"domain\":\"${{ inputs.domain }}\",\"clientSecret\":\"${{ inputs.client-secret }}\"}},\"url\":\"${{ inputs.url }}\"}}}},\"orchestratorInfo\":{\"assetType\":\"CORE\",\"assetIdentifier\":\"NA\",\"profileIdentifier\":\"NA\"},\"metaInformation\":{\"actor\":\"NA\",\"commit_id\":\"NA\",\"tenent_info\":\"NA\",\"scanner_type\":\"DAST\",\"pipeline_info\":{\"id\":\"04612\",\"name\":\"test_pipeline\",\"step_id\":\"04612_test_pipeline\"}}}'
-        CONFIG_JSON: ""
+        CONFIG_JSON: '{\"metaInfo\":{\"url\":\"NA\",\"username\":\"NA\",\"password\":\"NA\",\"client_secret\":\"${{ inputs.token }}\",\"toolName\":\"stackhawk\",\"attributes\":{\"sub_attributes\":{\"stackhawk_context\":{\"environment\":\"${{ inputs.environment }}\",\"context\":{\"appId\":\"${{ inputs.app-id }}\",\"paths\":\"\"},\"url\":\"${{ inputs.url }}\"}}}},\"orchestratorInfo\":{\"assetType\":\"CORE\",\"assetIdentifier\":\"NA\",\"profileIdentifier\":\"NA\"},\"metaInformation\":{\"actor\":\"NA\",\"commit_id\":\"NA\",\"tenent_info\":\"NA\",\"scanner_type\":\"DAST\",\"pipeline_info\":{\"id\":\"04612\",\"name\":\"test_pipeline\",\"step_id\":\"04612_test_pipeline\"}}}'
       run: |
         set -x
         cd /app
-        if [ ${{ inputs.auth-type }} = "noauth" ]
-        then
-          CONFIG_JSON=$NO_AUTH_CONFIG_JSON
-        elif [ ${{ inputs.auth-type }} = "UsernamePasswordAuth" ]
-        then
-          CONFIG_JSON=$USERNAME_PASSWORD_AUTH_CONFIG_JSON
-        else
-          CONFIG_JSON=$AUTH0_CONFIG_JSON
-        fi
         echo "RUN ID: ${{ cloudbees.run_id }}"
         echo "Job ID: ${{ job.id }}"
         echo "Step ID: ${{step.internal.id}}"
