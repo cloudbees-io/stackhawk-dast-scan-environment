@@ -1,6 +1,6 @@
 = CloudBees action: Scan with StackHawk
 
-Use this action to retrieve StackHawk Dynamic Application Security Testing (DAST) scan results for a web application and publish them to the CloudBees platform.
+Use this action to retrieve StackHawk dynamic application security testing (DAST) scan results for a web application and then publish them to the CloudBees platform.
 
 == Inputs
 
@@ -35,14 +35,14 @@ Use this action to retrieve StackHawk Dynamic Application Security Testing (DAST
 
 |===
 
-== Usage examples
+== Usage example
 
-The following display an example of the action in use.
+In your YAML file, add:
 
 [source,yaml]
 ----
 
-      - name: Scan with StackHawk noauth
+      - name: Scan with StackHawk
         uses: cloudbees-io/stackhawk-dast-scan-environment@v2
         with:
           token: ${{ secrets.STACKHAWK_TOKEN }}
@@ -59,6 +59,6 @@ link:https://opensource.org/license/mit/[MIT license].
 
 == References
 
-* Learn more about link:https://docs.cloudbees.com/docs/cloudbees-saas-platform-actions/latest/[using actions in CloudBees workflows].
-* Learn about link:https://docs.cloudbees.com/docs/cloudbees-saas-platform/latest/[the CloudBees platform].
+* Learn more about link:https://docs.cloudbees.com/docs/cloudbees-platform/latest/actions[using actions in CloudBees workflows].
+* Learn about link:https://docs.cloudbees.com/docs/cloudbees-platform/latest/[the CloudBees platform].
 
